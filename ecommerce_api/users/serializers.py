@@ -1,13 +1,12 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
 
-from apps.users.models import Address
+from users.models import Address, User
 
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        exclude = ('user',)
+        fields = ('__all__')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -47,12 +46,13 @@ class UserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        location_data = validated_data.pop('location')
+        if location_data:
+            location = Address.objects.create(**location_data)
         validated_data['is_staff'] = False
         validated_data['is_active'] = True
-        address_data = validated_data.pop('address')
+        validated_data['location'] = location
         user = super().create(validated_data)
         user.set_password(validated_data.pop('password'))
         user.save()
-        if address_data:
-            Address.objects.create(user=user, **address_data)
         return user

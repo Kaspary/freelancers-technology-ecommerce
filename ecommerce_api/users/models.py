@@ -1,21 +1,23 @@
+from common.models import BaseModel
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from rest_framework.authtoken.models import Token
-
-from common.models import BaseModel
 
 
 class Address(BaseModel):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lat = models.FloatField()
     lng = models.FloatField()
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     zip_code = models.IntegerField()
+
+
+class User(AbstractUser):
+    location = models.ForeignKey(Address, null=True, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

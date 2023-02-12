@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
-from apps.authentication.serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
+from authentication.serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 
 
 class ObtainAuthTokenView(ObtainAuthToken, generics.GenericAPIView):

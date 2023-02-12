@@ -27,13 +27,13 @@ urlpatterns = [
     re_path(r'^accounts/', include('rest_framework.urls')),
     
     # Project urls
-    re_path(r'', include('apps.core.urls')),
+    re_path(r'', include('core.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    re_path(r'^api/(?P<version>(v1|v2))/users/', include('apps.users.urls'), name='Users'),
-    re_path(r'^api/(?P<version>(v1|v2))/authenticate/', include('apps.authentication.urls'), name='Authenticate'),
+    re_path(r'^api/(?P<version>(v1|v2))/users/', include('users.urls'), name='Users'),
+    re_path(r'^api/(?P<version>(v1|v2))/authenticate/', include('authentication.urls'), name='Authenticate'),
 
     # Statics
     *staticfiles_urlpatterns()

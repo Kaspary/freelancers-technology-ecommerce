@@ -1,8 +1,8 @@
-from apps.users.serializers import UserSerializer
-from django.contrib.auth.models import User
+from users.serializers import UserSerializer
+from users.models import User
 from rest_framework import permissions, viewsets
 
-from apps.users.permissions import IsSelfOrAdmin
+from users.permissions import IsSelfOrAdmin
 
 
 class UserView(viewsets.ModelViewSet):

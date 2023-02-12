@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from apps.users import views
+from users import views
 
 app_name='users'
 router = DefaultRouter()
