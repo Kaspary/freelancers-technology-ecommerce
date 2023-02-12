@@ -5,8 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import (TokenObtainPairView,
                                             TokenRefreshView)
 
-from ecommerce_api.users.serializers import (CustomTokenObtainPairSerializer,
-                                             CustomTokenRefreshSerializer)
+from ecommerce_api.apps.authentication.serializers import CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 
 
 class ObtainAuthTokenView(ObtainAuthToken, generics.GenericAPIView):

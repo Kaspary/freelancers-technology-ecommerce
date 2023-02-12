@@ -1,5 +1,3 @@
-import uuid
-
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
@@ -10,20 +8,14 @@ from rest_framework.authtoken.models import Token
 from common.models import BaseModel
 
 
-class RequestPasswordToken(BaseModel):
-    token = models.UUIDField(default=uuid.uuid4, editable=False)
+class Address(BaseModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return '{} - {}'.format(self.user.email, self.token)
-
-
-class ConfirmEmailToken(BaseModel):
-    token = models.UUIDField(default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return '{} - {}'.format(self.user.email, self.token)
+    lat = models.FloatField()
+    lng = models.FloatField()
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    zip_code = models.IntegerField()
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
