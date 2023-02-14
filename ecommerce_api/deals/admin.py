@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.apps import apps
 
-models = apps.get_app_config('negotiation').get_models()
+models = apps.get_app_config('deals').get_models()
 
 for model in models:
     try:

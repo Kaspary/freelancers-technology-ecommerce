@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, re_path
+from django.conf.urls.static import static
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from drf_yasg.generators import OpenAPISchemaGenerator
@@ -34,7 +36,8 @@ urlpatterns = [
 
     re_path(r'^api/(?P<version>(v1|v2))/users/', include('users.urls'), name='Users'),
     re_path(r'^api/(?P<version>(v1|v2))/authenticate/', include('authentication.urls'), name='Authenticate'),
+    re_path(r'^api/(?P<version>(v1|v2))/deals/', include('deals.urls'), name='Deals'),
 
     # Statics
     *staticfiles_urlpatterns()
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

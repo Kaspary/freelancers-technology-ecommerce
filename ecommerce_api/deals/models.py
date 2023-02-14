@@ -3,7 +3,7 @@ from django.db import models
 from common.models import BaseModel
 from users.models import Address
 
-class Negotiation(BaseModel):
+class Deals(BaseModel):
 
     TYPE_CHOICES = [
         (1, 'Venda'),
@@ -18,7 +18,7 @@ class Negotiation(BaseModel):
         (4, 'Data'),
     ]
 
-    type: models.IntegerField(choices=TYPE_CHOICES)
+    type = models.IntegerField(choices=TYPE_CHOICES)
     value = models.FloatField()
     description = models.CharField(max_length=255)
     trade_for = models.CharField(max_length=255)
@@ -28,5 +28,5 @@ class Negotiation(BaseModel):
 
 
 class Picture(BaseModel):
-    image: models.ImageField()
-    negotiation: models.ForeignKey(Negotiation, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='pictures')
+    deals = models.ForeignKey(Deals, on_delete=models.CASCADE, related_name='pictures')

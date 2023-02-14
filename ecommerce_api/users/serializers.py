@@ -46,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        location_data = validated_data.pop('location')
+        location_data = validated_data.pop('location', None)
         if location_data:
             location = Address.objects.create(**location_data)
         validated_data['is_staff'] = False
