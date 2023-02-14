@@ -1,7 +1,7 @@
-from deals.models import Deals
+from deals.models import Deal
 from rest_framework import viewsets
 
-from deals.serializer import NegotiatonResultSerializer, NegotiatonSerializer
+from deals.serializer import DealResultSerializer, DealSerializer
 
 
 class DealsView(viewsets.ModelViewSet):
@@ -9,12 +9,12 @@ class DealsView(viewsets.ModelViewSet):
     Manager Deals
     """
     http_method_names = ['get', 'post', 'put', 'delete']
-    queryset = Deals.objects.all()
+    queryset = Deal.objects.all()
 
     serializer_class = None
     
-    read_serializer_class = NegotiatonResultSerializer
-    write_serializer_class = NegotiatonSerializer
+    read_serializer_class = DealResultSerializer
+    write_serializer_class = DealSerializer
 
     def get_serializer_class(self):    
         # if self.action in ("retrieve", "list"):

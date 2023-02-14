@@ -3,7 +3,7 @@ from django.db import models
 from common.models import BaseModel
 from users.models import Address
 
-class Deals(BaseModel):
+class Deal(BaseModel):
 
     TYPE_CHOICES = [
         (1, 'Venda'),
@@ -29,4 +29,4 @@ class Deals(BaseModel):
 
 class Picture(BaseModel):
     image = models.ImageField(upload_to='pictures')
-    deals = models.ForeignKey(Deals, on_delete=models.CASCADE, related_name='pictures')
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='pictures')

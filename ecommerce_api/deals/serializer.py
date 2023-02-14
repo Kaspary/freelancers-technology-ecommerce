@@ -1,7 +1,7 @@
 import base64
 import uuid
 
-from deals.models import Deals, Picture
+from deals.models import Deal, Picture
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
@@ -14,7 +14,7 @@ class PictureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Picture
-        fields = ("image", "deals")
+        fields = ("image", "deal")
 
     def to_internal_value(self, data):
         image_data = data.pop("image", None)
@@ -39,14 +39,14 @@ class PictureField(serializers.SlugRelatedField):
         return request.build_absolute_uri(data.image.url)
 
 
-class NegotiatonSerializer(serializers.ModelSerializer):
+class DealSerializer(serializers.ModelSerializer):
     location = AddressSerializer()
     pictures = PictureField(
         many=True, slug_field="image", queryset=Picture.objects.all()
     )
 
     class Meta:
-        model = Deals
+        model = Deal
         fields = "__all__"
 
     def create(self, validated_data):
@@ -66,5 +66,5 @@ class NegotiatonSerializer(serializers.ModelSerializer):
             return deal
 
 
-class NegotiatonResultSerializer(serializers.Serializer):
-    deal = NegotiatonSerializer()
+class DealResultSerializer(serializers.Serializer):
+    deal = DealSerializer()
