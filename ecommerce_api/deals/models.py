@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from common.models import BaseModel
@@ -18,6 +19,7 @@ class Deal(BaseModel):
         (4, 'Data'),
     ]
 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     type = models.IntegerField(choices=TYPE_CHOICES)
     value = models.FloatField()
     description = models.CharField(max_length=255)
@@ -30,3 +32,11 @@ class Deal(BaseModel):
 class Picture(BaseModel):
     image = models.ImageField(upload_to='pictures')
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name='pictures')
+
+
+class Bid(BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    accepted = models.BooleanField(default=False)
+    value = models.FloatField()
+    description = models.CharField(max_length=255)

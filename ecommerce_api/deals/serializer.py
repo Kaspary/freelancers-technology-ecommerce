@@ -1,7 +1,7 @@
 import base64
 import uuid
 
-from deals.models import Deal, Picture
+from deals.models import Bid, Deal, Picture
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
@@ -17,14 +17,20 @@ class PictureSerializer(serializers.ModelSerializer):
         fields = ("image", "deal")
 
     def to_internal_value(self, data):
-        image_data = data.pop("image", None)
-        if image_data != None:
-            format, imgstr = image_data.split(";base64,")
-            ext = format.split("/")[-1]
-            content_file = ContentFile(
-                base64.b64decode(imgstr), name=f"{uuid.uuid4()}.{ext}"
-            )
+        image_string = data.pop("image", None)
+        content_file = self.base64_to_content_file(image_string)
         return super().to_internal_value({"image": content_file, **data})
+
+    def base64_to_content_file(self, image_string):
+        if not image_string:
+            return
+        b64, ext = self.parse_base64(image_string)
+        return ContentFile(b64, name=f"{uuid.uuid4()}.{ext}")
+
+    def parse_base64(self, image_string):
+        format, imgstr = image_string.split(";base64,")
+        ext = format.split("/")[-1]
+        return image_string.b64decode(imgstr), ext
 
 
 class PictureField(serializers.SlugRelatedField):
@@ -47,24 +53,61 @@ class DealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Deal
-        fields = "__all__"
+        exclude = ("user",)
 
     def create(self, validated_data):
         with transaction.atomic():
-            images_data = validated_data.pop("pictures", [])
+            pictures = validated_data.pop("pictures", [])
 
             location_data = validated_data.pop("location", None)
             if location_data:
                 location = Address.objects.create(**location_data)
 
-            validated_data["location"] = location
+            validated_data.update({
+                'user': self.context['user_id'],
+                'location': location
+            })
             deal = super().create(validated_data)
-            for image in images_data:
-                picture = PictureSerializer(data={"deals": deal.id, "image": image})
+            self.save_pictures(deal.id, pictures)
+            
+            return deal
+
+    def save_pictures(self, deal_id, pictures):
+        for image in pictures:
+                picture = PictureSerializer(data={"deal": deal_id, "image": image})
                 picture.is_valid(raise_exception=True)
                 picture.save()
-            return deal
 
 
 class DealResultSerializer(serializers.Serializer):
     deal = DealSerializer()
+
+
+class BidSerializer(serializers.ModelSerializer):
+
+    user_id = serializers.CharField(source='user', read_only=True)
+
+    class Meta:
+        model = Bid
+        fields = (
+            'id',
+            'accepted',
+            'value',
+            'description',
+            'user_id',
+            'created_at',
+            'updated_at',
+        )
+
+    def create(self, validated_data):
+        deal_id = self.context['deal_id']
+        try:
+            deal = Deal.objects.get(id=deal_id)
+        except Deal.DoesNotExist:
+            raise serializers.ValidationError({"deal_id": [f'Deal was not found with id {deal_id}.']})
+
+        validated_data.update({
+            'user': self.context['user_id'],
+            'deal': deal
+        })
+        return super().create(validated_data)
