@@ -1,4 +1,3 @@
-import base64
 import uuid
 
 from deals.models import Bid, Deal, Picture
@@ -64,7 +63,7 @@ class DealSerializer(serializers.ModelSerializer):
                 location = Address.objects.create(**location_data)
 
             validated_data.update({
-                'user': self.context['user_id'],
+                'user': self.context['user'],
                 'location': location
             })
             deal = super().create(validated_data)
@@ -107,7 +106,7 @@ class BidSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"deal_id": [f'Deal was not found with id {deal_id}.']})
 
         validated_data.update({
-            'user': self.context['user_id'],
+            'user': self.context['user'],
             'deal': deal
         })
         return super().create(validated_data)

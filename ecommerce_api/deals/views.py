@@ -22,12 +22,12 @@ class DealsView(viewsets.ModelViewSet):
         return self.write_serializer_class
 
     def get_queryset(self):
-        queryset = Deal.objects.filter(user__id=self.request.user.id)
+        queryset = self.queryset.objects.filter(user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['user_id'] = self.request.user
+        context['user'] = self.request.user
         return context
     
 
@@ -53,11 +53,11 @@ class BidView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         deal_id = self.kwargs.get('deal_id')
-        queryset = Bid.objects.filter(deal__id=deal_id, user__id=self.request.user.id)
+        queryset = self.queryset.objects.filter(deal__id=deal_id, user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['deal_id'] = self.kwargs.get('deal_id')
-        context['user_id'] = self.request.user
+        context['user'] = self.request.user
         return context
