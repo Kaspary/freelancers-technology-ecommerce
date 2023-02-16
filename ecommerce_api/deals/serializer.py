@@ -62,51 +62,42 @@ class DealSerializer(serializers.ModelSerializer):
             if location_data:
                 location = Address.objects.create(**location_data)
 
-            validated_data.update({
-                'user': self.context['user'],
-                'location': location
-            })
+            validated_data.update({"user": self.context["user"], "location": location})
             deal = super().create(validated_data)
             self.save_pictures(deal.id, pictures)
-            
+
             return deal
 
     def save_pictures(self, deal_id, pictures):
         for image in pictures:
-                picture = PictureSerializer(data={"deal": deal_id, "image": image})
-                picture.is_valid(raise_exception=True)
-                picture.save()
-
-
-class DealResultSerializer(serializers.Serializer):
-    deal = DealSerializer()
+            picture = PictureSerializer(data={"deal": deal_id, "image": image})
+            picture.is_valid(raise_exception=True)
+            picture.save()
 
 
 class BidSerializer(serializers.ModelSerializer):
-
-    user_id = serializers.CharField(source='user', read_only=True)
+    user_id = serializers.CharField(source="user", read_only=True)
 
     class Meta:
         model = Bid
         fields = (
-            'id',
-            'accepted',
-            'value',
-            'description',
-            'user_id',
-            'created_at',
-            'updated_at',
+            "id",
+            "accepted",
+            "value",
+            "description",
+            "user_id",
+            "created_at",
+            "updated_at",
         )
 
     def create(self, validated_data):
-        deal_id = self.context['deal_id']
+        deal_id = self.context["deal_id"]
         try:
             deal = Deal.objects.get(id=deal_id)
         except Deal.DoesNotExist:
-            raise serializers.ValidationError({"deal_id": [f'Deal was not found with id {deal_id}.']})
+            raise serializers.ValidationError(
+                {"deal_id": [f"Deal was not found with id {deal_id}."]}
+            )
 
-        validated_data.update({
-            'user': self.context['user'],
-            'deal': deal
-        })
+        validated_data.update({"user": self.context["user"], "deal": deal})
         return super().create(validated_data)

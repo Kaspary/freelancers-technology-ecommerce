@@ -8,19 +8,12 @@ class DealsView(viewsets.ModelViewSet):
     """
     Manager Deals
     """
+
     permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ["get", "post", "put", "delete"]
     queryset = Deal.objects.all()
 
-    serializer_class = None
-    
-    read_serializer_class = DealResultSerializer
-    write_serializer_class = DealSerializer
-
-    def get_serializer_class(self):
-        # if self.action in ("retrieve", "list"):
-        #     return self.read_serializer_class
-        return self.write_serializer_class
+    serializer_class = DealSerializer
 
     def get_queryset(self):
         if not self.request.user.is_manager:
@@ -29,39 +22,29 @@ class DealsView(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['user'] = self.request.user
+        context["user"] = self.request.user
         return context
-    
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     # self.queryset = self.get_queryset().filter(user = request.user.id)
-    #     result = super().list(request, *args, **kwargs)
-    #     return result
-
-    # def list(self, request, *args, **kwargs):
-    #     # self.queryset = self.get_queryset().filter(user=request.user.id)
-    #     result = super().list(request, *args, **kwargs)
-    #     return result
 
 
 class BidView(viewsets.ModelViewSet):
     """
     Manager Deals
     """
+
     permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'delete']
+    http_method_names = ["get", "post", "put", "delete"]
     queryset = Bid.objects.all()
 
     serializer_class = BidSerializer
 
     def get_queryset(self):
-        queryset = self.queryset.filter(deal__id=self.kwargs.get('deal_id'))
+        queryset = self.queryset.filter(deal__id=self.kwargs.get("deal_id"))
         if not self.request.user.is_manager:
             queryset = self.queryset.filter(user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['deal_id'] = self.kwargs.get('deal_id')
-        context['user'] = self.request.user
+        context["deal_id"] = self.kwargs.get("deal_id")
+        context["user"] = self.request.user
         return context
