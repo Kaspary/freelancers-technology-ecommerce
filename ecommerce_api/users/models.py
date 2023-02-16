@@ -19,6 +19,10 @@ class Address(BaseModel):
 class User(AbstractUser):
     location = models.ForeignKey(Address, null=True, on_delete=models.SET_NULL, related_name='user')
 
+    @property
+    def is_manager(self):
+        return self.is_superuser or self.is_staff
+
 
 class Invite(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)

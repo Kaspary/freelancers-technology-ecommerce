@@ -1,5 +1,5 @@
 from deals.models import Bid, Deal
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from deals.serializer import BidSerializer, DealResultSerializer, DealSerializer
 
@@ -8,6 +8,7 @@ class DealsView(viewsets.ModelViewSet):
     """
     Manager Deals
     """
+    permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'delete']
     queryset = Deal.objects.all()
 
@@ -16,13 +17,14 @@ class DealsView(viewsets.ModelViewSet):
     read_serializer_class = DealResultSerializer
     write_serializer_class = DealSerializer
 
-    def get_serializer_class(self):    
+    def get_serializer_class(self):
         # if self.action in ("retrieve", "list"):
         #     return self.read_serializer_class
         return self.write_serializer_class
 
     def get_queryset(self):
-        queryset = self.queryset.objects.filter(user__id=self.request.user.id)
+        if not self.request.user.is_manager:
+            queryset = self.queryset.filter(user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):
@@ -46,14 +48,16 @@ class BidView(viewsets.ModelViewSet):
     """
     Manager Deals
     """
+    permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'delete']
     queryset = Bid.objects.all()
 
     serializer_class = BidSerializer
 
     def get_queryset(self):
-        deal_id = self.kwargs.get('deal_id')
-        queryset = self.queryset.objects.filter(deal__id=deal_id, user__id=self.request.user.id)
+        queryset = self.queryset.filter(deal__id=self.kwargs.get('deal_id'))
+        if not self.request.user.is_manager:
+            queryset = self.queryset.filter(user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):

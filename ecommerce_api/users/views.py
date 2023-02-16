@@ -38,7 +38,7 @@ class InviteView(viewsets.ModelViewSet):
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
-        queryset = self.queryset.objects.filter(user__id=self.request.user.id)
+        queryset = self.queryset.filter(user__id=self.request.user.id)
         return queryset
 
     def get_serializer_context(self):
