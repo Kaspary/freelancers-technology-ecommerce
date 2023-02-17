@@ -4,6 +4,7 @@ from deals import views
 
 app_name='deals'
 router = DefaultRouter()
+router.register(r'(?P<deal_id>\d+)/messages', views.MessageView, basename='messages')
 router.register(r'(?P<deal_id>\d+)/bids', views.BidView, basename='bids')
 router.register(r'', views.DealsView, basename='deals')
 

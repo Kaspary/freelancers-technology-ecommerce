@@ -15,6 +15,7 @@ class Deal(BaseModel):
     URGENCY_CHOICES = [
         (1, 'Baixa'),
         (2, 'Média'),
+        (2, 'Média'),
         (3, 'Alta'),
         (4, 'Data'),
     ]
@@ -40,3 +41,10 @@ class Bid(BaseModel):
     accepted = models.BooleanField(default=False)
     value = models.FloatField()
     description = models.CharField(max_length=255)
+
+
+class Message(BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    message = models.CharField(max_length=255)
