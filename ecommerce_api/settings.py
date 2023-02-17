@@ -160,3 +160,5 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+CORREIOS_URL = "http://ws.correios.com.br/calculador/CalcPrecoPrazo.aspx"
