@@ -20,12 +20,12 @@ class Deal(BaseModel):
         (4, 'Data'),
     ]
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     type = models.IntegerField(choices=TYPE_CHOICES)
     value = models.FloatField()
     description = models.CharField(max_length=255)
     trade_for = models.CharField(max_length=255)
-    location = models.OneToOneField(Address, null=True, on_delete=models.SET_NULL)
+    location = models.OneToOneField(Address, on_delete=models.PROTECT)
     urgency = models.IntegerField(choices=URGENCY_CHOICES)
     limit_date = models.DateField()
 
@@ -36,15 +36,20 @@ class Picture(BaseModel):
 
 
 class Bid(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    deal = models.ForeignKey(Deal, on_delete=models.PROTECT)
     accepted = models.BooleanField(default=False)
     value = models.FloatField()
     description = models.CharField(max_length=255)
 
 
 class Message(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    deal = models.ForeignKey(Deal, on_delete=models.PROTECT)
     title = models.CharField(max_length=255)
     message = models.CharField(max_length=255)
+
+
+class Payment(BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    deal = models.OneToOneField(Deal, on_delete=models.PROTECT)

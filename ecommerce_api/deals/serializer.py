@@ -1,11 +1,10 @@
-import binascii
 import uuid
 
-from deals.models import Bid, Deal, Picture, Message
+from deals.models import Bid, Deal, Message, Payment, Picture
+from delivery.models import Address
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
-from delivery.models import Address
 from users.serializers import AddressSerializer
 
 
@@ -136,3 +135,11 @@ class DeliverySerializer(serializers.Serializer):
     value_without_additionals = serializers.FloatField(help_text="Valor sem adicionais")
     home_delivery = serializers.BooleanField(help_text="Entrega domiciliar")
     delivery_in_saturday = serializers.BooleanField(help_text="Entrega sabado")
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Payment
+        fields = ('__all__')
+   

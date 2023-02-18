@@ -10,7 +10,7 @@ from delivery.models import Address
 
 
 class User(AbstractUser):
-    location = models.ForeignKey(Address, null=True, on_delete=models.SET_NULL, related_name='user')
+    location = models.ForeignKey(Address, on_delete=models.PROTECT, related_name='user')
 
     @property
     def is_manager(self):

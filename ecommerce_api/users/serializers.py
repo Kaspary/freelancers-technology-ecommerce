@@ -9,7 +9,7 @@ from users.models import Invite, User
 class UserSerializer(serializers.ModelSerializer):
     location = AddressSerializer()
     confirm_password = serializers.CharField(style={'input_type':'password'}, write_only=True)
-    invite = serializers.SlugRelatedField(write_only=True, slug_field='id', queryset=Invite.objects.all())
+    invite = serializers.SlugRelatedField(required=False, allow_null=True, write_only=True, slug_field='id', queryset=Invite.objects.all())
 
     class Meta:
         model = User
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['confirm_password']:
             erros['password'] = 'Passwords must match.'
         
-        if attrs['invite'].user_invited:
+        if attrs['invite'] and attrs['invite'].user_invited:
             erros['invite'] = 'This invitation has already been used.'
 
         if erros:
@@ -64,6 +64,7 @@ class UserSerializer(serializers.ModelSerializer):
             return user
     
     def _update_invite(self, invite, user):
+        if not invite: return invite
         invite.user_invited = user
         invite.save()
         return invite

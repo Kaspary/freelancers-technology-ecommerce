@@ -3,41 +3,23 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, re_path
 from django.conf.urls.static import static
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from drf_yasg.generators import OpenAPISchemaGenerator
+from swagger import urlpatterns as swagger_urlpatterns
 
-
-class OpenAPISchemaGenerator(OpenAPISchemaGenerator):
-   
-   def determine_path_prefix(self, paths):
-      return '/api/'
-
-schema_view = get_schema_view(
-   info=openapi.Info(
-      title="Technology E-Commerce",
-      default_version='v1',
-      description="E-commerce API to project to freelancers buy, sell, and exchange technology products.",
-   ),
-   public=True,
-   generator_class=OpenAPISchemaGenerator
-)
 
 urlpatterns = [
     # System urls
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^accounts/', include('rest_framework.urls')),
     
-    # Project urls
-    re_path(r'', include('core.urls')),
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    # Docs
+    *swagger_urlpatterns,
 
+    # Application
     re_path(r'^api/(?P<version>(v1|v2))/users/', include('users.urls'), name='Users'),
     re_path(r'^api/(?P<version>(v1|v2))/authenticate/', include('authentication.urls'), name='Authenticate'),
     re_path(r'^api/(?P<version>(v1|v2))/deals/', include('deals.urls'), name='Deals'),
 
     # Statics
-    *staticfiles_urlpatterns()
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    *staticfiles_urlpatterns(),
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+]

@@ -19,7 +19,7 @@ def calc_delivery_between_ceps(
     width: float,
     diameter: float,
 ):
-    delivery = calc_price_and_deadline(
+    return calc_price_and_deadline(
         CorreiosRequest(
             sCepOrigem=cep_origin,
             sCepDestino=cep_destination,

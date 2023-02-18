@@ -12,7 +12,6 @@ class BaseDataclass:
         }
         for field in fields(self):
             value = getattr(self, field.name)
-            print(field.name)
             try:
                 if value is not None:
                     field_type = field.type.__origin__ if type(field.type) is _GenericAlias else field.type

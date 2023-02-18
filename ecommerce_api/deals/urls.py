@@ -10,4 +10,5 @@ router.register(r'', views.DealsView, basename='deals')
 
 urlpatterns = [
     re_path('(?P<deal_id>\d+)/deliveries', views.DeliveryView.as_view(), name='delivery'),
+    re_path('(?P<deal_id>\d+)/payments', views.PaymentView.as_view(), name='payment'),
 ] + router.urls
