@@ -1,4 +1,4 @@
-from os import path
+from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 from deals import views
 
@@ -8,4 +8,6 @@ router.register(r'(?P<deal_id>\d+)/messages', views.MessageView, basename='messa
 router.register(r'(?P<deal_id>\d+)/bids', views.BidView, basename='bids')
 router.register(r'', views.DealsView, basename='deals')
 
-urlpatterns = router.urls
+urlpatterns = [
+    re_path('(?P<deal_id>\d+)/deliveries', views.DeliveryView.as_view(), name='delivery'),
+] + router.urls

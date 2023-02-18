@@ -5,7 +5,7 @@ from deals.models import Bid, Deal, Picture, Message
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
-from users.models import Address
+from delivery.models import Address
 from users.serializers import AddressSerializer
 
 
@@ -124,3 +124,15 @@ class MessageSerializer(serializers.ModelSerializer):
 
         validated_data.update({"user": self.context["user"], "deal": deal})
         return super().create(validated_data)
+
+
+class DeliverySerializer(serializers.Serializer):
+    code = serializers.CharField(help_text="Código do Serviço de Entrega.")
+    value = serializers.FloatField(help_text="Preço total da encomenda, em Reais, incluindo os preços dos serviços opcionais")
+    own_hand_value = serializers.FloatField(help_text="Preço do serviço adicional Mão Própria")
+    value_notice_receipt = serializers.FloatField(help_text="Preço do serviço adicional Aviso de Recebimento")
+    declared_value = serializers.FloatField(help_text="Preço do serviço adicional Valor Declarado")
+    deadline = serializers.IntegerField(help_text="Prazo de entrega")
+    value_without_additionals = serializers.FloatField(help_text="Valor sem adicionais")
+    home_delivery = serializers.BooleanField(help_text="Entrega domiciliar")
+    delivery_in_saturday = serializers.BooleanField(help_text="Entrega sabado")

@@ -1,13 +1,9 @@
 from rest_framework import serializers
 from django.db import transaction
+from delivery.serializers import AddressSerializer
+from delivery.models import Address
 
-from users.models import Address, Invite, User
-
-
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = ('__all__')
+from users.models import Invite, User
 
 
 class UserSerializer(serializers.ModelSerializer):

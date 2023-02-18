@@ -1,5 +1,5 @@
 import requests
-from correios.dtos import CorreiosRequest, CorreiosResponse
+from delivery.correios.dtos import CorreiosRequest, CorreiosResponse
 from django.conf import settings
 
 """

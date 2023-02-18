@@ -6,14 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-
-class Address(BaseModel):
-    lat = models.FloatField()
-    lng = models.FloatField()
-    address = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    zip_code = models.IntegerField()
+from delivery.models import Address
 
 
 class User(AbstractUser):

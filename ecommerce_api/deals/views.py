@@ -1,31 +1,14 @@
+from deals.filters import DeliveryFilter
 from deals.models import Bid, Deal, Message
-from deals.serializer import BidSerializer, DealSerializer, MessageSerializer
+from deals.serializer import (BidSerializer, DealSerializer,
+                              DeliverySerializer, MessageSerializer)
 from django.contrib.auth.models import AnonymousUser
-from rest_framework import permissions, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, mixins, permissions, viewsets
+from rest_framework.response import Response
 
-from correios.dtos import CorreiosRequest
-from correios.integracao import calc_price_and_deadline
+from delivery.actions import calc_delivery_between_ceps
 
-calc_price_and_deadline(
-        CorreiosRequest(
-            nCdEmpresa='09146920',
-            sDsSenha=123456,
-            sCepOrigem=70002900,
-            sCepDestino=71939360,
-            nVlPeso=1,
-            nCdFormato=1,
-            nVlComprimento=30,
-            nVlAltura=30,
-            nVlLargura=30,
-            sCdMaoPropria='n',
-            nVlValorDeclarado=0,
-            sCdAvisoRecebimento='n',
-            nCdServico=40010,
-            nVlDiametro=0,
-            StrRetorno='xml',
-            nIndicaCalculo=3
-        )
-    )
 
 class DealsView(viewsets.ModelViewSet):
     """
@@ -95,3 +78,36 @@ class MessageView(viewsets.ModelViewSet):
         context["deal_id"] = self.kwargs.get("deal_id")
         context["user"] = self.request.user
         return context
+
+
+class DeliveryView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeliverySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = DeliveryFilter
+
+    def get(self, request, deal_id=None, *args, **kwargs):
+        deal = Deal.objects.get(id=deal_id)
+        delivery = calc_delivery_between_ceps(
+            cep_origin=deal.location.zip_code,
+            cep_destination=request.user.location.zip_code,
+            value=0,
+            weight=30,
+            length=30,
+            height=30,
+            width=1,
+            diameter=0
+        )
+        delivery_map = {
+            "code": delivery.Codigo,
+            "value": delivery.Valor,
+            "own_hand_value": delivery.ValorMaoPropria,
+            "value_notice_receipt": delivery.ValorAvisoRecebimento,
+            "declared_value": delivery.ValorValorDeclarado,
+            "deadline": delivery.PrazoEntrega,
+            "value_without_additionals": delivery.ValorSemAdicionais,
+            "home_delivery": delivery.home_delivery,
+            "delivery_in_saturday": delivery.delivery_in_saturday
+        }
+        return Response(self.get_serializer_class()(delivery_map).data, status=200)
