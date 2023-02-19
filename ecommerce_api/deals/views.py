@@ -26,7 +26,7 @@ class DealsView(BaseModelViewSet):
 class BaseDealView(BaseModelViewSet):
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = self.queryset()
         return queryset.filter(deal__id=self.kwargs.get("deal_id"))
 
     def get_serializer_context(self):
@@ -65,10 +65,18 @@ class DeliveryView(mixins.RetrieveModelMixin, BaseGenericAPIView):
             return Response({'message': "User doesn't have an address"}, status=400)
 
         deal = Deal.objects.get(id=deal_id)
+
+        value = deal.value
+        if value < 23.50:
+            value = 23.50
+        elif value > 10000:
+            value = 10000
+
+
         delivery = calc_delivery_between_ceps(
             cep_origin=deal.location.zip_code,
             cep_destination=request.user.location.zip_code,
-            value=deal.value,
+            value=value,
             weight=deal.product.weight,
             length=deal.product.length,
             height=deal.product.height,
@@ -98,6 +106,11 @@ class PaymentView(
     
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['POST',]:
+            return None
+        return super().get_serializer_class()
 
     def get(self, request, deal_id=None, *args, **kwargs):
         try:

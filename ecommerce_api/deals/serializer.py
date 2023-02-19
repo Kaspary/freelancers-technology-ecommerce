@@ -66,6 +66,13 @@ class ProductSerializer(serializers.ModelSerializer):
             product = super().create(validated_data)
             self.save_pictures(product.id, pictures)
             return product
+        
+    def update(self, instance, validated_data):
+        with transaction.atomic():
+            pictures = validated_data.pop("pictures", [])
+            product = super().update(instance, validated_data)
+            self.save_pictures(product.id, pictures)
+            return product
 
     def save_pictures(self, product_id, pictures):
         for image in pictures:
@@ -98,6 +105,23 @@ class DealSerializer(serializers.ModelSerializer):
                 "product": product
             })
             deal = super().create(validated_data)
+            return deal
+        
+    def update(self, instance, validated_data):
+        with transaction.atomic():
+            location = AddressSerializer(data=validated_data.pop("location"), instance=instance.location)
+            location.is_valid(raise_exception=True)
+            location = location.save()
+
+            product = ProductSerializer(data=validated_data.pop("product"), instance=instance.product)
+            product.is_valid(raise_exception=True)
+            product = product.save()
+
+            validated_data.update({
+                "location": location,
+                "product": product
+            })
+            deal = super().update(instance, validated_data)
             return deal
 
 
@@ -171,4 +195,3 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = "__all__"
-        read_only_fields = ("user", "deal")

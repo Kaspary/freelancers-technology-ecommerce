@@ -21,7 +21,7 @@ class Invite(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField()
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='sended_invites')
-    user_invited = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='invites')
+    user_invited = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='invites')
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

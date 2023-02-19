@@ -1,5 +1,5 @@
 from common.views import BaseModelViewSet
-from users.serializers import InviteSerializer, UserSerializer
+from users.serializers import InviteSerializer, UpdateUserSerializer, UserSerializer
 from users.models import Invite, User
 from rest_framework import permissions, viewsets
 
@@ -12,6 +12,11 @@ class UserView(BaseModelViewSet):
     """
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT',]:
+                return UpdateUserSerializer
+        return self.serializer_class
 
     # return correct permission to method
     def get_permissions(self):
