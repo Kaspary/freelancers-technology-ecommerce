@@ -60,16 +60,20 @@ class DeliveryView(mixins.RetrieveModelMixin, BaseGenericAPIView):
     filterset_class = DeliveryFilter
 
     def get(self, request, deal_id=None, *args, **kwargs):
+
+        if not request.user.location:
+            return Response({'message': "User doesn't have an address"}, status=400)
+
         deal = Deal.objects.get(id=deal_id)
         delivery = calc_delivery_between_ceps(
             cep_origin=deal.location.zip_code,
             cep_destination=request.user.location.zip_code,
             value=deal.value,
-            weight=1,
-            length=30,
-            height=30,
-            width=30,
-            diameter=0
+            weight=deal.product.weight,
+            length=deal.product.length,
+            height=deal.product.height,
+            width=deal.product.width,
+            diameter=deal.product.diameter
         )
 
         if delivery.MsgErro: 
@@ -94,11 +98,6 @@ class PaymentView(
     
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method in ["GET",]:
-            return super().get_serializer_class()
-        return None
 
     def get(self, request, deal_id=None, *args, **kwargs):
         try:

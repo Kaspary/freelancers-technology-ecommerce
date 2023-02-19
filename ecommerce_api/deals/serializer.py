@@ -1,7 +1,7 @@
+import base64
 import uuid
 
-from deals.models import Bid, Deal, Message, Payment, Picture
-from delivery.models import Address
+from deals.models import Bid, Deal, Message, Payment, Picture, Product
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
@@ -13,7 +13,7 @@ class PictureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Picture
-        fields = ("image", "deal")
+        fields = ("image", "product")
 
     def to_internal_value(self, data):
         try:
@@ -30,10 +30,10 @@ class PictureSerializer(serializers.ModelSerializer):
         return ContentFile(b64, name=f"{uuid.uuid4()}.{ext}")
 
     def _parse_base64(self, image_string):
-        assert ';base64,' in image_string, 'Invalid base64 format'
+        assert ";base64," in image_string, "Invalid base64 format"
         format, imgstr = image_string.split(";base64,")
         ext = format.split("/")[-1]
-        return image_string.b64decode(imgstr), ext
+        return base64.b64decode(imgstr), ext
 
 
 class PictureField(serializers.SlugRelatedField):
@@ -48,11 +48,35 @@ class PictureField(serializers.SlugRelatedField):
         return request.build_absolute_uri(data.image.url)
 
 
+class ProductSerializer(serializers.ModelSerializer):
+    pictures = PictureField(
+        many=True,
+        slug_field="image",
+        queryset=Picture.objects.all(),
+        help_text='Base64 format, e.g. "data:image/jpg;base64,/9j/2wBDAA..."'
+    )
+
+    class Meta:
+        model = Product
+        fields = ("__all__")
+
+    def create(self, validated_data):
+        with transaction.atomic():
+            pictures = validated_data.pop("pictures", [])
+            product = super().create(validated_data)
+            self.save_pictures(product.id, pictures)
+            return product
+
+    def save_pictures(self, product_id, pictures):
+        for image in pictures:
+            picture = PictureSerializer(data={"product": product_id, "image": image})
+            picture.is_valid(raise_exception=True)
+            picture.save()
+
+
 class DealSerializer(serializers.ModelSerializer):
     location = AddressSerializer()
-    pictures = PictureField(
-        many=True, slug_field="image", queryset=Picture.objects.all()
-    )
+    product = ProductSerializer()
 
     class Meta:
         model = Deal
@@ -60,23 +84,21 @@ class DealSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         with transaction.atomic():
-            pictures = validated_data.pop("pictures", [])
+            location = AddressSerializer(data=validated_data.pop("location"))
+            location.is_valid(raise_exception=True)
+            location = location.save()
 
-            location_data = validated_data.pop("location", None)
-            if location_data:
-                location = Address.objects.create(**location_data)
+            product = ProductSerializer(data=validated_data.pop("product"))
+            product.is_valid(raise_exception=True)
+            product = product.save()
 
-            validated_data.update({"user": self.context["user"], "location": location})
+            validated_data.update({
+                "user": self.context["user"],
+                "location": location,
+                "product": product
+            })
             deal = super().create(validated_data)
-            self.save_pictures(deal.id, pictures)
-
             return deal
-
-    def save_pictures(self, deal_id, pictures):
-        for image in pictures:
-            picture = PictureSerializer(data={"deal": deal_id, "image": image})
-            picture.is_valid(raise_exception=True)
-            picture.save()
 
 
 class BidSerializer(serializers.ModelSerializer):
@@ -127,10 +149,18 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class DeliverySerializer(serializers.Serializer):
     code = serializers.CharField(help_text="Código do Serviço de Entrega.")
-    value = serializers.FloatField(help_text="Preço total da encomenda, em Reais, incluindo os preços dos serviços opcionais")
-    own_hand_value = serializers.FloatField(help_text="Preço do serviço adicional Mão Própria")
-    value_notice_receipt = serializers.FloatField(help_text="Preço do serviço adicional Aviso de Recebimento")
-    declared_value = serializers.FloatField(help_text="Preço do serviço adicional Valor Declarado")
+    value = serializers.FloatField(
+        help_text="Preço total da encomenda, em Reais, incluindo os preços dos serviços opcionais"
+    )
+    own_hand_value = serializers.FloatField(
+        help_text="Preço do serviço adicional Mão Própria"
+    )
+    value_notice_receipt = serializers.FloatField(
+        help_text="Preço do serviço adicional Aviso de Recebimento"
+    )
+    declared_value = serializers.FloatField(
+        help_text="Preço do serviço adicional Valor Declarado"
+    )
     deadline = serializers.IntegerField(help_text="Prazo de entrega")
     value_without_additionals = serializers.FloatField(help_text="Valor sem adicionais")
     home_delivery = serializers.BooleanField(help_text="Entrega domiciliar")
@@ -138,8 +168,7 @@ class DeliverySerializer(serializers.Serializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Payment
-        fields = ('__all__')
-   
+        fields = "__all__"
+        read_only_fields = ("user", "deal")
