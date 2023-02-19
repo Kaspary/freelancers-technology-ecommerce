@@ -1,4 +1,11 @@
-# Freelancers technology ecommerce
+# README.MD
+
+O projeto foi desenvolvido utilizando Python 3.10, com framework Django Rest Framework. Para o desenvolvimento, visando facilitar o setup inicial, foi utilizado o Sqlite3 (Não indicado para ambientes de produção).
+O desenvolvimento foi orientado pelas definições do projeto. Visando entregar o mais próximo do solicitado, e atendendo o formado dos endpoints.
+
+Alguns pontos não estão totalemente finalizados, ou possuem alguma melhoria, e foram descritos em Atividades pendentes.
+
+## Escopo
 
 **Público Alvo:** Profissionais que atuam em uma rede de indicação de trabalhos freelance que precisam comprar, vender ou trocar produtos de tecnologia (notebooks, mouses, teclados, etc) que possibilitem a realização de seus trabalhos de forma rápida, otimizando seus custos com estruturas de trabalho.
 
@@ -48,11 +55,7 @@
 - [ ]  Adicionar filtros para a listagem de itens. Especificamente na consulta de mensagens, permitir filtrar por origem, e alterar a ordenação.
 - [ ]  Retornar a listagem de todos os meios de frete. Atualmente só retorna o valor para sedex varejo.
 - [ ]  Padronizar mensagens de erro no retorno em um objeto padronizado.
-
-## Projeto
-
-- Python 3.10
-- Django Rest Framework.
+- [ ]  Implemetnar testes automatizados para a validação dos endpoints.
 
 ## Execução da API
 
@@ -105,7 +108,7 @@ Execute o seguinte comando para subir o container da api.
 docker-compose up --build
 ```
 
-Este comando realiza todos procedimentos listados no passo [**Execução local (sem o uso do docker)**](https://www.notion.so/Execu-o-local-sem-o-uso-do-docker-1cf21b33e7ee445cb81edc520c8ebe24).
+Este comando realiza todos procedimentos listados no passo Execução local (sem o uso do docker).
 
 O usuário padrão para acesso de administrador é o seguinte:
 
