@@ -2,13 +2,12 @@ import logging
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass, fields
 from typing import _GenericAlias
-from common import utils
 from delivery.correios.enums import SNBoolEnum
 
 class BaseDataclass:
     def __post_init__(self):
         casts = {
-            float: utils.str_as_float     
+            float: lambda x: float(str(x).replace(',', '.'))
         }
         for field in fields(self):
             value = getattr(self, field.name)

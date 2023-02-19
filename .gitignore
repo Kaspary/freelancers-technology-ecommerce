@@ -821,5 +821,9 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,django,linux,windows,visualstudio,pycharm
 
-**/migrations/
+**/migrations/*
 !**/migrations/__init__.py
+
+ecommerce_api/data/*
+
+!.gitkeep

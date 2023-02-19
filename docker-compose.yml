@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+    api:
+        container_name: ecommerce_api
+        build:
+            context: ./ecommerce_api
+            dockerfile: Dockerfile
+            args:
+            - DJANGO_ADMIN_USER=admin
+            - DJANGO_ADMIN_PASSWORD=admin
+        restart: always
+        volumes:
+            - ./ecommerce_api/data:/usr/src/app/data
+        ports:
+            - 8000:8000
+        environment:
+            - PYTHONUNBUFFERED=0

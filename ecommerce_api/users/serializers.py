@@ -7,7 +7,7 @@ from users.models import Invite, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    location = AddressSerializer()
+    location = AddressSerializer(required=True)
     confirm_password = serializers.CharField(style={'input_type':'password'}, write_only=True)
     invite = serializers.SlugRelatedField(required=False, allow_null=True, write_only=True, slug_field='id', queryset=Invite.objects.all())
 

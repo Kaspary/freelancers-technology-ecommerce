@@ -6,3 +6,8 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["created_at"]
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
