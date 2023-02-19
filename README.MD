@@ -56,6 +56,7 @@ Alguns pontos não estão totalemente finalizados, ou possuem alguma melhoria, e
 - [ ]  Retornar a listagem de todos os meios de frete. Atualmente só retorna o valor para sedex varejo.
 - [ ]  Padronizar mensagens de erro no retorno em um objeto padronizado.
 - [ ]  Implemetnar testes automatizados para a validação dos endpoints.
+- [ ]  Padronizar idioma para as mensagens de retorno.
 
 ## Execução da API
 
