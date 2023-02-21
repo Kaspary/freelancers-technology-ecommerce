@@ -26,28 +26,6 @@ Alguns pontos não estão totalemente finalizados, ou possuem alguma melhoria, e
 
 ## Estimativa
 
-**Tarefa**
-
-|  | Estimativa em horas |
-| --- | --- |
-| Estudo e entendimento do escopo | 2 |
-| CRUD Usuário | 4 |
-| CRUD Endereço | 2 |
-| CRUD Negociação | 2 |
-| CRUD Produto da negociação | 2 |
-| CRUD Foto do produto da negociação | 4 |
-| CRUD Oferta em negociação | 4 |
-| CRUD Mensagens | 4 |
-| Integração com webservice correios | 4 |
-| Consulta de Frete | 2 |
-| CRUD Pagamento | 2 |
-| CRUD Convite | 3 |
-| Implementação de serviço em docker. | 3 |
-| Documentação do projeto | 4 |
-| Total | 42 horas |
-
-**Estimativa em dias:** 7 (19/02/2023)
-
 ## Atividades pendentes
 
 - [ ]  Corrigir a atualização de imagens de produtos, atualmente está duplicando a imagem, e não realiza a exclusão de imagens não utilizadas mais.
